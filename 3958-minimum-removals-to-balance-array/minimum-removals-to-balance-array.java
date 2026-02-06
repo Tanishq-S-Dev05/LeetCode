@@ -5,7 +5,6 @@ class Solution {
         int maxLen = 0;
 
         for (int j = 0; j < nums.length; j++) {
-
             while ((long) nums[j] > (long) nums[i] * k) {
                 i++;
             }
