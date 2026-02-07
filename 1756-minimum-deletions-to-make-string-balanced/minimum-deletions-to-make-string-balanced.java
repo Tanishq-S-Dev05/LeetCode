@@ -1,15 +1,17 @@
 class Solution {
     public int minimumDeletions(String s) {
-        int bCount = 0;  
-        int deletions = 0;
+        int ans = 0;
+        int count = 0;
 
-        for (char c : s.toCharArray()) {
-            if (c == 'b') {
-                bCount++;
-            } else {
-                deletions = Math.min(deletions + 1, bCount);
+        for(char ch: s.toCharArray()) {
+            if(ch == 'b') {
+                count += 1;
+            } else if(count > 0) {
+                ans+= 1;
+                count -= 1;
+             }
             }
-        }
-        return deletions;
+           
+           return ans;
+        } 
     }
-}
