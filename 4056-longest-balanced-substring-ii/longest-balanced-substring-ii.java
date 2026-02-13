@@ -1,75 +1,84 @@
+import java.util.*;
+
 class Solution {
+
     public int longestBalanced(String s) {
-        char[] cs = s.toCharArray();
-        int x = calc1(cs);
-        int y = Math.max(calc2(cs, 'a', 'b'), Math.max(calc2(cs, 'b', 'c'), calc2(cs, 'a', 'c')));
-        int z = calc3(cs);
-        return Math.max(x, Math.max(y, z));
-    }
-
-    private int calc1(char[] s) {
-        int res = 0;
-        int i = 0, n = s.length;
-        while (i < n) {
-            int j = i + 1;
-            while (j < n && s[j] == s[i]) {
-                j++;
-            }
-            res = Math.max(res, j - i);
-            i = j;
-        }
-        return res;
-    }
-
-    private int calc2(char[] s, char a, char b) {
-        int res = 0;
-        int i = 0, n = s.length;
-        while (i < n) {
-            while (i < n && s[i] != a && s[i] != b) {
-                i++;
-            }
-            Map<Integer, Integer> pos = new HashMap<>();
-            pos.put(0, i - 1);
-            int d = 0;
-            while (i < n && (s[i] == a || s[i] == b)) {
-                d += (s[i] == a) ? 1 : -1;
-                Integer prev = pos.get(d);
-                if (prev != null) {
-                    res = Math.max(res, i - prev);
+        int n = s.length();
+        int ans = 1;
+        for (char ch : new char[]{'a', 'b', 'c'}) {
+            int cnt = 0;
+            for (char c : s.toCharArray()) {
+                if (c == ch) {
+                    cnt++;
+                    ans = Math.max(ans, cnt);
                 } else {
-                    pos.put(d, i);
+                    cnt = 0;
                 }
-                i++;
             }
         }
-        return res;
-    }
 
-    private int calc3(char[] s) {
-        Map<Long, Integer> pos = new HashMap<>();
-        pos.put(f(0, 0), -1);
+        ans = Math.max(ans, longestTwo(s, 'a', 'b'));
+        ans = Math.max(ans, longestTwo(s, 'a', 'c'));
+        ans = Math.max(ans, longestTwo(s, 'b', 'c'));
 
-        int[] cnt = new int[3];
-        int res = 0;
 
-        for (int i = 0; i < s.length; i++) {
-            char c = s[i];
-            ++cnt[c - 'a'];
-            int x = cnt[0] - cnt[1];
-            int y = cnt[1] - cnt[2];
-            long k = f(x, y);
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
 
-            Integer prev = pos.get(k);
-            if (prev != null) {
-                res = Math.max(res, i - prev);
+        int A = 0, B = 0, C = 0;
+
+        for (int i = 0; i < n; i++) {
+            char ch = s.charAt(i);
+            if (ch == 'a') A++;
+            else if (ch == 'b') B++;
+            else C++;
+
+            int key = (A - B) * 200001 + (B - C);
+
+            if (map.containsKey(key)) {
+                ans = Math.max(ans, i - map.get(key));
             } else {
-                pos.put(k, i);
+                map.put(key, i);
+            }
+        }
+
+        return ans;
+    }
+
+    private int longestTwo(String s, char x, char y) {
+        int n = s.length();
+        int size = 2 * n + 1;
+
+        int[] first = new int[size];
+        int[] seen = new int[size];
+        int version = 1;
+
+        int sum = 0, res = 0;
+
+        first[n] = -1;
+        seen[n] = version;
+
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+
+            if (c == x) sum++;
+            else if (c == y) sum--;
+            else {
+                version++;     
+                sum = 0;
+                first[n] = i;
+                seen[n] = version;
+                continue;
+            }
+
+            int idx = sum + n;
+            if (seen[idx] == version) {
+                res = Math.max(res, i - first[idx]);
+            } else {
+                seen[idx] = version;
+                first[idx] = i;
             }
         }
         return res;
-    }
-
-    private long f(int x, int y) {
-        return (x + 100000) << 20 | (y + 100000);
     }
 }
