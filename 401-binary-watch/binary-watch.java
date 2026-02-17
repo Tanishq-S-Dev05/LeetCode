@@ -1,27 +1,19 @@
 class Solution {
     public List<String> readBinaryWatch(int turnedOn) {
-        List<String> time = new ArrayList<>();
-        for(int h =0; h<=11; h++){
-            for(int m =0;m<=59;m++){
-                if(bitcount(h) + bitcount(m) == turnedOn){
-                    time.add(formatted(h,m));
+        ArrayList<String> res=new ArrayList<>();
+        for(int h=0;h<12;h++){
+            for(int m=0;m<60;m++){
+                int t=Integer.bitCount(h)+Integer.bitCount(m);
+                if(t==turnedOn){
+                    if(m<10){
+                        res.add(h+":0"+m);
+                    }
+                    else{
+                        res.add(h+":"+m);
+                    }
                 }
             }
         }
-        return time;
+        return res;
     }
-
-    public int bitcount(int value){
-          return Integer.bitCount(value);
-    }
-
-    public String formatted(int h,int m){
-        String formatedTime = h + ":";
-        if(m<10){
-            formatedTime += "0";
-        }
-        formatedTime += m;
-        return formatedTime;
-    }
-
 }
